@@ -32,6 +32,8 @@
  *  - essentially, it cannot import dynamic content such as form fields, links
  * or page annotations (anything not a part of the page content stream).
  */
+use setasign\Fpdi\Tcpdf;
+use setasign\Fpdi\Fpdi as Merger;
 
 class PDFMerger
 {
@@ -43,10 +45,7 @@ class PDFMerger
 	 * @return void
 	 */
 	public function __construct()
-	{
-		require_once('tcpdf/tcpdf.php');
-		require_once('tcpdf/tcpdi.php');
-	}
+	{}
 
 	/**
 	 * Add a PDF for inclusion in the merge with a valid file path. Pages should be formatted: 1,3,6, 12-16.
@@ -73,19 +72,24 @@ class PDFMerger
 		return $this;
 	}
 
-	/**
-	 * Merges your provided PDFs and outputs to specified location.
-	 * @param $outputmode
-	 * @param $outputname
-	 * @return PDF
-	 */
-	public function merge($outputmode = 'browser', $outputpath = 'newfile.pdf')
-	{
+    /**
+     * Merges your provided PDFs and outputs to specified location.
+     * @param string $outputmode
+     * @param string $outputpath
+     * @return bool|PDF
+     * @throws \setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException
+     * @throws \setasign\Fpdi\PdfParser\Filter\FilterException
+     * @throws \setasign\Fpdi\PdfParser\PdfParserException
+     * @throws \setasign\Fpdi\PdfParser\Type\PdfTypeException
+     * @throws \setasign\Fpdi\PdfReader\PdfReaderException
+     */
+	public function merge($outputmode = 'browser', $outputpath = 'newfile.pdf'): bool|PDF
+    {
 		if(!isset($this->_files) || !is_array($this->_files)): throw new exception("No PDFs to merge."); endif;
 
-    $fpdi = new \TCPDI;
-    $fpdi->SetPrintHeader(false);
-    $fpdi->SetPrintFooter(false);
+        $fpdi = new Merger();
+//        $fpdi->SetPrintHeader(false);
+//        $fpdi->SetPrintFooter(false);
 
 		//merger operations
 		foreach($this->_files as $file)
@@ -98,15 +102,22 @@ class PDFMerger
 			//add the pages
 			if($filepages == 'all')
 			{
-				for($i=1; $i<=$count; $i++)
-				{
-					$template = $fpdi->importPage($i);
-					$size = $fpdi->getTemplateSize($template);
-					$orientation = ($size['h'] > $size['w']) ? 'P' : 'L';
+//				for($i=1; $i<=$count; $i++)
+//				{
+//					$template = $fpdi->importPage($i);
+//					$size = $fpdi->getTemplateSize($template);
+//					$orientation = ($size['h'] > $size['w']) ? 'P' : 'L';
+//
+//					$fpdi->AddPage($orientation, array($size['w'], $size['h']));
+//					$fpdi->useTemplate($template);
+//				}
 
-					$fpdi->AddPage($orientation, array($size['w'], $size['h']));
-					$fpdi->useTemplate($template);
-				}
+                for ($pageNo = 1; $pageNo <= $count; $pageNo++) {
+                    $templateID = $fpdi->importPage($pageNo);
+                    $templateSize = $fpdi->getTemplateSize($templateID);
+                    $fpdi->addPage($templateSize['orientation'], [$templateSize['width'], $templateSize['height']]);
+                    $fpdi->useTemplate($templateID);
+                }
 			}
 			else
 			{
