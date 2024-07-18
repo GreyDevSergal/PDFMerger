@@ -102,22 +102,15 @@ class PDFMerger
 			//add the pages
 			if($filepages == 'all')
 			{
-//				for($i=1; $i<=$count; $i++)
-//				{
-//					$template = $fpdi->importPage($i);
-//					$size = $fpdi->getTemplateSize($template);
-//					$orientation = ($size['h'] > $size['w']) ? 'P' : 'L';
-//
-//					$fpdi->AddPage($orientation, array($size['w'], $size['h']));
-//					$fpdi->useTemplate($template);
-//				}
+				for($i=1; $i<=$count; $i++)
+				{
+					$template = $fpdi->importPage($i);
+					$size = $fpdi->getTemplateSize($template);
+					$orientation = ($size['h'] > $size['w']) ? 'P' : 'L';
 
-                for ($pageNo = 1; $pageNo <= $count; $pageNo++) {
-                    $templateID = $fpdi->importPage($pageNo);
-                    $templateSize = $fpdi->getTemplateSize($templateID);
-                    $fpdi->addPage($templateSize['orientation'], [$templateSize['width'], $templateSize['height']]);
-                    $fpdi->useTemplate($templateID);
-                }
+					$fpdi->AddPage($orientation, array($size['w'], $size['h']));
+					$fpdi->useTemplate($template);
+				}
 			}
 			else
 			{
