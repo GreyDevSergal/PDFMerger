@@ -83,7 +83,7 @@ class PDFMerger
      * @throws \setasign\Fpdi\PdfParser\Type\PdfTypeException
      * @throws \setasign\Fpdi\PdfReader\PdfReaderException
      */
-	public function merge($outputmode = 'browser', $outputpath = 'newfile.pdf'): bool|PDF
+	public function merge($outputmode = 'browser', $outputpath = 'newfile.pdf'): bool|PDF|string
     {
 		if(!isset($this->_files) || !is_array($this->_files)): throw new exception("No PDFs to merge."); endif;
 
